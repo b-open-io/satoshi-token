@@ -1,4 +1,4 @@
-import { toToken, toTokenSat } from '.';
+import { ReturnTypes, toToken, toTokenSat } from '.';
 
 describe('toToken', () => {
   it('converts simple integer amounts', () => {
@@ -45,7 +45,7 @@ describe('toTokenSat', () => {
   });
 
   it('handles TypeError input', () => {
-    expect(toTokenSat.bind(this, true as unknown as number, 8)).toThrow('toTokenSat must be called on a number or string');
+    expect(toTokenSat.bind(this, true as unknown as number, 8)).toThrow('toTokenSat must be called on a number, string or bigint');
   });
 });
 
@@ -98,13 +98,13 @@ describe('toTokenSat for coin with 420000000000000 supply and 0 decimals', () =>
 describe('toToken for coin with 420000000000000 supply and 6 decimals', () => {
   it('handles big supply', () => {
     expect(toToken("420000000000000000000", 6)).toEqual(420000000000000);
-    expect(toToken("420000000000000000000", 6, true)).toEqual("420000000000000.000000");
+    expect(toToken("420000000000000000000", 6, ReturnTypes.String)).toEqual("420000000000000.000000");
   });
 });
 
 describe('toTokenSat for coin with 420000000000000 supply and 6 decimals', () => {
   it('handles big supply', () => {
     expect(toTokenSat.bind(this,420000000000000, 6)).toThrow("Integer overflow. Try returning a string instead.");
-    expect(toTokenSat(420000000000000, 6, true)).toEqual("420000000000000000000");
+    expect(toTokenSat(420000000000000, 6, ReturnTypes.String)).toEqual("420000000000000000000");
   });
 });

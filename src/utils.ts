@@ -13,3 +13,11 @@ export function isString(...args: unknown[]) {
 export function isNumber(...args: unknown[]) {
   return args.every(arg => typeof arg === 'number');
 }
+
+/**
+ * Determines if all the passed args are bigints
+ * @param args The arguments to check
+ */
+export function isBigInt(...args: unknown[]) {
+  return args.every(arg => typeof arg === 'bigint');
+}
