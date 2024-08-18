@@ -89,7 +89,7 @@ export function toTokenSat<T extends ReturnType = 'number'>(
       result = intStr  + (decStr || '').padEnd(decimals, '0');
       break;
     default:
-      result = Math.floor(token * (10 ** decimals)).toString();
+      result = Math.round(token * (10 ** decimals)).toString();
   }
 
   switch (returnType) {
