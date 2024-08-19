@@ -1,9 +1,9 @@
 import { isBigInt, isNumber, isString } from './utils';
-import { Decimal } from "@ilihub/decimal";
 
 // Conditional return type
 type ReturnType = 'string' | 'bigint' | 'number';
 type RT<T extends ReturnType> = T extends 'string' ? string : T extends 'bigint' ? bigint : number;
+
 export const ReturnTypes = {
   String: 'string' as const,
   BigInt: 'bigint' as const,
@@ -84,10 +84,11 @@ export function toTokenSat<T extends ReturnType = 'number'>(
     case 'bigint':
       result = (token * (10n ** BigInt(decimals))).toString();
       break;
-    case 'string':
+    case 'string': {
       const [intStr, decStr] = token.split('.');
       result = intStr  + (decStr || '').padEnd(decimals, '0');
       break;
+    }
     default:
       result = Math.round(token * (10 ** decimals)).toString();
   }
@@ -97,13 +98,20 @@ export function toTokenSat<T extends ReturnType = 'number'>(
       return BigInt(result) as RT<T>;
     case 'string':
       return result as RT<T>;
-    default:
-      const resultNum = Number(result);
+    default: {
+      let resultNum: number;
+      try {
+        resultNum = Number(result);
+      } catch (e) {
+        throw new Error(`Invalid number: ${result}`);
+      }
+
       if (!Number.isSafeInteger(Math.round(resultNum))) {
-        console.log({result: Math.round(resultNum)})
         throw new Error('Integer overflow. Try returning a string instead.');
       }
+      console.log("here2")
       return resultNum as RT<T>;
+    }
   }
 }
 

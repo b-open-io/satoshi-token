@@ -106,5 +106,6 @@ describe('toTokenSat for coin with 420000000000000 supply and 6 decimals', () =>
   it('handles big supply', () => {
     expect(toTokenSat.bind(this,420000000000000, 6)).toThrow("Integer overflow. Try returning a string instead.");
     expect(toTokenSat(420000000000000, 6, ReturnTypes.String)).toEqual("420000000000000000000");
+    expect(toTokenSat("42000000000000.1234", 6, ReturnTypes.BigInt)).toEqual(42000000000000123400n);
   });
 });
