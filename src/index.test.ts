@@ -152,3 +152,74 @@ describe("toTokenSat with negative numbers", () => {
 		expect(toTokenSat(-4.6, 8)).toEqual(-460000000);
 	});
 });
+
+describe('toToken with edge cases', () => {
+  it('handles very small negative numbers', () => {
+    expect(toToken(-1, 8)).toEqual(-0.00000001);
+    expect(toToken('-1', 8)).toEqual(-0.00000001);
+    expect(toToken(-1, 8, ReturnTypes.String)).toEqual('-0.00000001');
+  });
+
+  it('handles negative zero', () => {
+    expect(toToken(-0, 8)).toEqual(0);
+    expect(toToken('-0', 8)).toEqual(0);
+    expect(toToken(-0, 8, ReturnTypes.String)).toEqual('0.00000000');
+  });
+
+  it('handles numbers between -1 and 0', () => {
+    expect(toToken(-50, 8)).toEqual(-0.0000005);
+    expect(toToken('-50', 8)).toEqual(-0.0000005);
+    expect(toToken(-50, 8, ReturnTypes.String)).toEqual('-0.00000050');
+  });
+
+  it('handles large negative numbers', () => {
+    expect(toToken(-1000000000000, 8)).toEqual(-10000);
+    expect(toToken('-1000000000000', 8)).toEqual(-10000);
+    expect(toToken(-1000000000000, 8, ReturnTypes.String)).toEqual('-10000.00000000');
+  });
+});
+
+describe('toTokenSat with edge cases', () => {
+  it('handles very small negative numbers', () => {
+    expect(toTokenSat(-0.00000001, 8)).toEqual(-1);
+    expect(toTokenSat('-0.00000001', 8)).toEqual(-1);
+    expect(toTokenSat(-0.00000001, 8, ReturnTypes.String)).toEqual('-1');
+  });
+
+  it('handles negative zero', () => {
+    expect(toTokenSat(-0, 8)).toEqual(0);
+    expect(toTokenSat('-0', 8)).toEqual(0);
+    expect(toTokenSat(-0, 8, ReturnTypes.String)).toEqual('0');
+  });
+
+  it('handles numbers between -1 and 0', () => {
+    expect(toTokenSat(-0.5, 8)).toEqual(-50000000);
+    expect(toTokenSat('-0.5', 8)).toEqual(-50000000);
+    expect(toTokenSat(-0.5, 8, ReturnTypes.String)).toEqual('-50000000');
+  });
+
+  it('handles large negative numbers', () => {
+    expect(toTokenSat(-10000, 8)).toEqual(-1000000000000);
+    expect(toTokenSat('-10000', 8)).toEqual(-1000000000000);
+    expect(toTokenSat(-10000, 8, ReturnTypes.String)).toEqual('-1000000000000');
+  });
+});
+
+describe('toToken and toTokenSat with different decimal places', () => {
+  it('handles 0 decimal places', () => {
+    expect(toToken(-123, 0)).toEqual(-123);
+    expect(toTokenSat(-123, 0)).toEqual(-123);
+  });
+
+  it('handles 15 decimal places', () => {
+    expect(toToken('-1000000000000000', 15)).toEqual(-1);
+    expect(toTokenSat(-1, 15)).toEqual(-1000000000000000);
+  });
+});
+
+describe('toToken and toTokenSat with bigint return type', () => {
+  it('returns correct bigint for negative numbers', () => {
+    expect(toToken.bind(this, -15000000, 8, ReturnTypes.BigInt)).toThrow();
+    expect(toTokenSat(-1.5, 8, ReturnTypes.BigInt)).toEqual(-150000000n);
+  });
+});
