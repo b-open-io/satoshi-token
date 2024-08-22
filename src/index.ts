@@ -34,27 +34,30 @@ export const ReturnTypes = {
   }
 
   let tokenSatBig = 0n
+  const isNegative = typeof tokenSat === 'string' ? tokenSat.startsWith('-') : tokenSat < 0;
+
   switch (typeof tokenSat) {
     case 'bigint':
       tokenSatBig = tokenSat ;
-      // result = token * (10n ** BigInt(decimals));
       break;
     case 'string':
-      tokenSatBig = BigInt(tokenSat.split('.')[0]);
+      tokenSatBig = BigInt(tokenSat.replace('-', '').split('.')[0]);
       break;
     default:
-      tokenSatBig = BigInt(Math.round(tokenSat))
+      tokenSatBig = BigInt(Math.abs(Math.round(tokenSat)));
   }
-  const intPart = tokenSatBig / (10n ** BigInt(decimals));
+
+  const sign = isNegative ? -1n : 1n;
+  const intPart = (tokenSatBig / (10n ** BigInt(decimals)));
   const decPart = tokenSatBig % (10n ** BigInt(decimals));
   
   switch (returnType) {
     case 'bigint':
-      return intPart as RT<T>;
+      return intPart * sign as RT<T>;
     case 'string':
-      return `${intPart}.${decPart.toString().padStart(decimals, '0')}` as RT<T>;
+      return `${isNegative ? '-' : ''}${intPart}.${decPart.toString().padStart(decimals, '0')}` as RT<T>;
     default:
-      return Number(`${intPart}.${decPart.toString().padStart(decimals, '0')}`) as RT<T>;
+      return Number(`${isNegative ? '-' : ''}${intPart}.${decPart.toString().padStart(decimals, '0')}`) as RT<T>;
   }
 }
 
@@ -80,17 +83,25 @@ export function toTokenSat<T extends ReturnType = 'number'>(
   }
 
   let result = ''
+  const isNegative = typeof token === 'string' ? token.startsWith('-') : token < 0;
+
   switch (typeof token) {
     case 'bigint':
       result = (token * (10n ** BigInt(decimals))).toString();
       break;
     case 'string': {
-      const [intStr, decStr] = token.split('.');
-      result = intStr  + (decStr || '').padEnd(decimals, '0');
+      // const [intStr, decStr] = token.split('.');
+      // result = intStr  + (decStr || '').padEnd(decimals, '0');
+      // break;
+      const absToken = token.replace('-', '');
+      const [intStr, decStr] = absToken.split('.');
+      result = intStr + (decStr || '').padEnd(decimals, '0');
+      if (isNegative) result = `-${result}`;
       break;
     }
     default:
-      result = Math.round(token * (10 ** decimals)).toString();
+      // result = Math.round(token * (10 ** decimals)).toString();
+      result = (Math.round(Math.abs(token) * (10 ** decimals)) * (isNegative ? -1 : 1)).toString();
   }
 
   switch (returnType) {
@@ -109,7 +120,6 @@ export function toTokenSat<T extends ReturnType = 'number'>(
       if (!Number.isSafeInteger(Math.round(resultNum))) {
         throw new Error('Integer overflow. Try returning a string instead.');
       }
-      console.log("here2")
       return resultNum as RT<T>;
     }
   }
