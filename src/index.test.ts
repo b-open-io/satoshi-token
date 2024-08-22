@@ -211,15 +211,16 @@ describe('toToken and toTokenSat with different decimal places', () => {
     expect(toTokenSat(-123, 0)).toEqual(-123);
   });
 
-  it('handles 15 decimal places', () => {
-    expect(toToken('-1000000000000000', 15)).toEqual(-1);
-    expect(toTokenSat(-1, 15)).toEqual(-1000000000000000);
+  it('handles 18 decimal places', () => {
+    expect(toToken('-1000000000000000000', 18)).toEqual(-1);
+    expect(toTokenSat(-1, 18, ReturnTypes.String)).toEqual("-1000000000000000000");
+    expect(toTokenSat.bind(this,-1, 18,)).toThrow();
   });
 });
 
 describe('toToken and toTokenSat with bigint return type', () => {
   it('returns correct bigint for negative numbers', () => {
-    expect(toToken.bind(this, -15000000, 8, ReturnTypes.BigInt)).toThrow();
+    expect(toToken.bind(this, -150000000, 8, ReturnTypes.BigInt)).toThrow();
     expect(toTokenSat(-1.5, 8, ReturnTypes.BigInt)).toEqual(-150000000n);
   });
 });
