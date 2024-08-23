@@ -1,4 +1,4 @@
-import { isBigInt, isNumber, isString } from "./utils";
+import { isBigInt, isNumber, isString } from "./utils.js";
 
 // Conditional return type
 type ReturnType = "string" | "bigint" | "number";
