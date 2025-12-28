@@ -1,9 +1,9 @@
 {
-  "version": "0.0.5",
+  "version": "0.0.6",
   "name": "satoshi-token",
-  "module": "src/index.ts",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "/dist"
@@ -17,20 +17,14 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
       "default": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "bun run clean && microbundle",
-    "clean": "rimraf -rf dist",
-    "lint": "tslint -p tsconfig.json",
-    "test": "jest"
-  },
-  "devDependencies": {
-    "@types/jest": "^30.0.0",
-    "jest": "^30.2.0",
-    "microbundle": "^0.15.1",
-    "rimraf": "^6.1.2"
+    "build": "rm -rf dist && bun build src/index.ts --outdir dist --minify && bun build src/index.ts --outfile dist/index.cjs --target node --minify && tsc --emitDeclarationOnly",
+    "test": "bun test"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
